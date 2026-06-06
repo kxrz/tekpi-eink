@@ -1,5 +1,5 @@
 import GalleryClient from "@/components/GalleryClient";
-import { deleteImage, listOriginals } from "@/lib/blob";
+import { deleteImage, listCrops, listOriginals } from "@/lib/blob";
 import { revalidatePath } from "next/cache";
 
 async function deleteImageAction(formData: FormData): Promise<void> {
@@ -14,19 +14,36 @@ async function deleteImageAction(formData: FormData): Promise<void> {
   revalidatePath("/");
 }
 
-export default async function Gallery() {
-  const { blobs } = await listOriginals();
+function basenameFromPathname(pathname: string): string {
+  const segments = pathname.split("/");
+  return segments[segments.length - 1] ?? pathname;
+}
 
-  if (blobs.length === 0) {
+export default async function Gallery() {
+  const [{ blobs: crops }, { blobs: originals }] = await Promise.all([
+    listCrops(),
+    listOriginals(),
+  ]);
+
+  const originalUrlByBasename = new Map<string, string>();
+  for (const blob of originals) {
+    originalUrlByBasename.set(basenameFromPathname(blob.pathname), blob.url);
+  }
+
+  if (crops.length === 0) {
     return <p className="text-zinc-400">Aucune image pour le moment.</p>;
   }
 
   return (
     <GalleryClient
-      blobs={blobs.map((blob) => ({
-        url: blob.url,
-        pathname: blob.pathname,
-      }))}
+      blobs={crops.map((blob) => {
+        const basename = basenameFromPathname(blob.pathname);
+        return {
+          url: blob.url,
+          pathname: blob.pathname,
+          originalUrl: originalUrlByBasename.get(basename) ?? blob.url,
+        };
+      })}
       deleteAction={deleteImageAction}
     />
   );
