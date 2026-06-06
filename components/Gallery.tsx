@@ -1,16 +1,7 @@
 import GalleryClient from "@/components/GalleryClient";
-import { deleteImage, listCrops, listOriginals } from "@/lib/blob";
+import { listCrops, listDisplay, listOriginals } from "@/lib/blob";
+import { del } from "@vercel/blob";
 import { revalidatePath } from "next/cache";
-
-async function deleteImageAction(formData: FormData): Promise<void> {
-  "use server";
-
-  const url = formData.get("url");
-  if (typeof url !== "string") return;
-
-  await deleteImage(url);
-  revalidatePath("/");
-}
 
 function basename(pathname: string): string {
   const segments = pathname.split("/");
@@ -20,6 +11,32 @@ function basename(pathname: string): string {
 function basenameWithoutExt(name: string): string {
   const dot = name.lastIndexOf(".");
   return dot === -1 ? name : name.slice(0, dot);
+}
+
+async function deleteImageAction(formData: FormData): Promise<void> {
+  "use server";
+
+  const originalUrl = formData.get("originalUrl");
+  const fileBase = formData.get("fileBase");
+  if (typeof originalUrl !== "string" || typeof fileBase !== "string") return;
+
+  // Collect all 3 versions to delete
+  const [{ blobs: crops }, { blobs: display }] = await Promise.all([
+    listCrops(),
+    listDisplay(),
+  ]);
+
+  const cropBlob = crops.find((b) => basenameWithoutExt(basename(b.pathname)) === fileBase);
+  const displayBlob = display.find((b) => basenameWithoutExt(basename(b.pathname)) === fileBase);
+
+  const urlsToDelete = [
+    originalUrl,
+    cropBlob?.url,
+    displayBlob?.url,
+  ].filter((u): u is string => typeof u === "string");
+
+  await del(urlsToDelete);
+  revalidatePath("/");
 }
 
 export default async function Gallery() {
@@ -32,7 +49,6 @@ export default async function Gallery() {
     return <p className="text-zinc-400">Aucune image pour le moment.</p>;
   }
 
-  // Map crop URL by base name (without extension) for lookup
   const cropByBase = new Map<string, string>();
   for (const crop of crops) {
     cropByBase.set(basenameWithoutExt(basename(crop.pathname)), crop.url);
@@ -47,6 +63,7 @@ export default async function Gallery() {
           pathname: blob.pathname,
           originalUrl: blob.url,
           cropUrl: cropByBase.get(base) ?? null,
+          fileBase: base,
         };
       })}
       deleteAction={deleteImageAction}

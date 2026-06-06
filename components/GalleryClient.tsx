@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type BlobItem = { url: string; pathname: string; originalUrl: string; cropUrl: string | null };
+type BlobItem = { url: string; pathname: string; originalUrl: string; cropUrl: string | null; fileBase: string };
 
 type Props = {
   blobs: BlobItem[];
@@ -107,7 +107,8 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
               )}
             </button>
             <form action={deleteAction}>
-              <input type="hidden" name="url" value={blob.url} />
+              <input type="hidden" name="originalUrl" value={blob.originalUrl} />
+              <input type="hidden" name="fileBase" value={blob.fileBase} />
               <button
                 type="submit"
                 className="w-full rounded-md border border-zinc-700 px-3 py-2 text-sm text-red-400 transition-colors hover:bg-zinc-900"
