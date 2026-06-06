@@ -1,6 +1,8 @@
 import Gallery from "@/components/Gallery";
 import UploadForm from "@/components/UploadForm";
 
+export const dynamic = "force-dynamic";
+
 export default function Home() {
   return (
     <div className="min-h-full bg-black text-white">
