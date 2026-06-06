@@ -33,6 +33,14 @@ export default function Home() {
           <Gallery />
         </section>
       </main>
+
+      <footer className="border-t border-zinc-800 px-4 py-3">
+        <div className="mx-auto max-w-3xl">
+          <p className="text-xs font-mono text-zinc-700">
+            {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local"}
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
