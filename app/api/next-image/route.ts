@@ -1,7 +1,5 @@
 import { listDisplay } from "@/lib/blob";
-import { ditherToACeP } from "@/lib/dither";
 import { NextResponse } from "next/server";
-import sharp from "sharp";
 
 export async function GET(): Promise<Response> {
   const { blobs } = await listDisplay();
@@ -26,17 +24,7 @@ export async function GET(): Promise<Response> {
     );
   }
 
-  const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-
-  const { data, info } = await sharp(imageBuffer)
-    .rotate()
-    .resize({ width: 800, height: 480, fit: "cover" })
-    .modulate({ brightness: 1.1, saturation: 2.0 })
-    .blur(0.4)
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
-  const pngBuffer = await ditherToACeP(data, info.width, info.height);
+  const pngBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
   return new Response(new Uint8Array(pngBuffer), {
     headers: {
