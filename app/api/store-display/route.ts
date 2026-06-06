@@ -9,7 +9,12 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
   }
 
-  const blob = await put(`display/${file.name}`, file, { access: "public" });
-
-  return NextResponse.json({ url: blob.url }, { status: 200 });
+  try {
+    const blob = await put(`display/${file.name}`, file, { access: "public", allowOverwrite: true });
+    return NextResponse.json({ url: blob.url }, { status: 200 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("store-display error:", message);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

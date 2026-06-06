@@ -61,8 +61,13 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
       });
 
       if (!response.ok) {
-        const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? "Échec de l'enregistrement.");
+        const text = await response.text();
+        let message = "Échec de l'enregistrement.";
+        try {
+          const data = JSON.parse(text) as { error?: string };
+          message = data.error ?? message;
+        } catch {}
+        throw new Error(message);
       }
 
       setSelectedBlob(null);
