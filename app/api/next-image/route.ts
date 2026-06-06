@@ -30,6 +30,7 @@ export async function GET(): Promise<Response> {
 
   const { data, info } = await sharp(imageBuffer)
     .resize({ width: 800, height: 480, fit: "cover" })
+    .modulate({ brightness: 1.1, saturation: 2.0 })
     .raw()
     .toBuffer({ resolveWithObject: true });
 
