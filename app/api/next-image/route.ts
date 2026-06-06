@@ -1,10 +1,10 @@
-import { listImages } from "@/lib/blob";
+import { listDisplay } from "@/lib/blob";
 import { ditherToACeP } from "@/lib/dither";
 import { NextResponse } from "next/server";
 import sharp from "sharp";
 
 export async function GET(): Promise<Response> {
-  const { blobs } = await listImages();
+  const { blobs } = await listDisplay();
 
   if (blobs.length === 0) {
     return NextResponse.json(

@@ -1,5 +1,5 @@
 import GalleryClient from "@/components/GalleryClient";
-import { deleteImage, listImages } from "@/lib/blob";
+import { deleteImage, listOriginals } from "@/lib/blob";
 import { revalidatePath } from "next/cache";
 
 async function deleteImageAction(formData: FormData): Promise<void> {
@@ -15,7 +15,7 @@ async function deleteImageAction(formData: FormData): Promise<void> {
 }
 
 export default async function Gallery() {
-  const { blobs } = await listImages();
+  const { blobs } = await listOriginals();
 
   if (blobs.length === 0) {
     return <p className="text-zinc-400">Aucune image pour le moment.</p>;

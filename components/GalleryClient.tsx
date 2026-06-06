@@ -45,28 +45,31 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
     setError(null);
 
     const formData = new FormData();
-    formData.append("url", selectedBlob.url);
     formData.append(
       "file",
-      new File([croppedBlob], selectedBlob.pathname, { type: "image/jpeg" }),
+      new File(
+        [croppedBlob],
+        selectedBlob.pathname.replace("originals/", ""),
+        { type: "image/jpeg" },
+      ),
     );
 
     try {
-      const response = await fetch("/api/replace-image", {
+      const response = await fetch("/api/store-display", {
         method: "POST",
         body: formData,
       });
 
       if (!response.ok) {
         const data = (await response.json()) as { error?: string };
-        throw new Error(data.error ?? "Échec du remplacement.");
+        throw new Error(data.error ?? "Échec de l'enregistrement.");
       }
 
       setSelectedBlob(null);
       setEditFile(null);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Échec du remplacement.");
+      setError(err instanceof Error ? err.message : "Échec de l'enregistrement.");
     } finally {
       setReplacing(false);
     }
