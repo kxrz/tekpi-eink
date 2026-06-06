@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type BlobItem = { url: string; pathname: string };
+type BlobItem = { url: string; pathname: string; originalUrl: string };
 
 type Props = {
   blobs: BlobItem[];
@@ -24,7 +24,7 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
     setEditFile(null);
     setError(null);
 
-    const response = await fetch(blob.url);
+    const response = await fetch(blob.originalUrl ?? blob.url);
     if (!response.ok) {
       setError("Impossible de charger l'image.");
       return;
@@ -49,7 +49,7 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
       "file",
       new File(
         [croppedBlob],
-        selectedBlob.pathname.replace("originals/", ""),
+        selectedBlob.pathname.replace("crops/", ""),
         { type: "image/jpeg" },
       ),
     );
@@ -61,13 +61,8 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
       });
 
       if (!response.ok) {
-        const text = await response.text();
-        let message = "Échec de l'enregistrement.";
-        try {
-          const data = JSON.parse(text) as { error?: string };
-          message = data.error ?? message;
-        } catch {}
-        throw new Error(message);
+        const data = (await response.json()) as { error?: string };
+        throw new Error(data.error ?? "Échec de l'enregistrement.");
       }
 
       setSelectedBlob(null);
@@ -94,7 +89,7 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
             <button
               type="button"
               onClick={() => handleOpenEditor(blob)}
-              className="relative aspect-square cursor-pointer overflow-hidden rounded-lg border border-zinc-800"
+              className="relative aspect-[5/3] cursor-pointer overflow-hidden rounded-lg border border-zinc-800"
             >
               <Image
                 src={blob.url}
