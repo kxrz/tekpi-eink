@@ -1,36 +1,30 @@
 "use client";
 
-import ImageEditor from "@/components/ImageEditor";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 
 export default function UploadForm() {
   const router = useRouter();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     setError(null);
-    const file = event.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-    }
-  }
 
-  async function handleConfirm(blob: Blob) {
-    if (!selectedFile) {
+    const form = event.currentTarget;
+    const fileInput = form.elements.namedItem("file") as HTMLInputElement;
+    const file = fileInput.files?.[0];
+
+    if (!file) {
+      setError("Veuillez sélectionner un fichier.");
       return;
     }
 
-    setError(null);
-    setUploading(true);
-
     const formData = new FormData();
-    formData.append(
-      "file",
-      new File([blob], selectedFile.name, { type: "image/jpeg" }),
-    );
+    formData.append("file", file);
+
+    setUploading(true);
 
     try {
       const response = await fetch("/api/upload", {
@@ -43,7 +37,7 @@ export default function UploadForm() {
         throw new Error(data.error ?? "Échec de l'envoi.");
       }
 
-      setSelectedFile(null);
+      form.reset();
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Échec de l'envoi.");
@@ -52,37 +46,22 @@ export default function UploadForm() {
     }
   }
 
-  function handleCancel() {
-    setSelectedFile(null);
-    setError(null);
-  }
-
-  if (uploading) {
-    return <p className="text-sm text-zinc-400">Envoi en cours...</p>;
-  }
-
-  if (selectedFile) {
-    return (
-      <div className="flex flex-col gap-4">
-        <ImageEditor
-          file={selectedFile}
-          onConfirm={handleConfirm}
-          onCancel={handleCancel}
-        />
-        {error ? <p className="text-sm text-red-400">{error}</p> : null}
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <input
         type="file"
+        name="file"
         accept="image/jpeg,image/png"
-        onChange={handleFileChange}
         className="text-sm text-zinc-300 file:mr-4 file:rounded-md file:border-0 file:bg-zinc-800 file:px-4 file:py-2 file:text-sm file:text-white hover:file:bg-zinc-700"
       />
+      <button
+        type="submit"
+        disabled={uploading}
+        className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {uploading ? "Envoi en cours..." : "Envoyer"}
+      </button>
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
-    </div>
+    </form>
   );
 }

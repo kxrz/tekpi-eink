@@ -1,6 +1,6 @@
+import GalleryClient from "@/components/GalleryClient";
 import { deleteImage, listImages } from "@/lib/blob";
 import { revalidatePath } from "next/cache";
-import Image from "next/image";
 
 async function deleteImageAction(formData: FormData): Promise<void> {
   "use server";
@@ -22,29 +22,12 @@ export default async function Gallery() {
   }
 
   return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-      {blobs.map((blob) => (
-        <div key={blob.url} className="flex flex-col gap-2">
-          <div className="relative aspect-square overflow-hidden rounded-lg border border-zinc-800">
-            <Image
-              src={blob.url}
-              alt={blob.pathname}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 50vw, 33vw"
-            />
-          </div>
-          <form action={deleteImageAction}>
-            <input type="hidden" name="url" value={blob.url} />
-            <button
-              type="submit"
-              className="w-full rounded-md border border-zinc-700 px-3 py-2 text-sm text-red-400 transition-colors hover:bg-zinc-900"
-            >
-              Supprimer
-            </button>
-          </form>
-        </div>
-      ))}
-    </div>
+    <GalleryClient
+      blobs={blobs.map((blob) => ({
+        url: blob.url,
+        pathname: blob.pathname,
+      }))}
+      deleteAction={deleteImageAction}
+    />
   );
 }
