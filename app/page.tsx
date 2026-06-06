@@ -1,42 +1,45 @@
 import Gallery from "@/components/Gallery";
+import Settings from "@/components/Settings";
 import UploadForm from "@/components/UploadForm";
 
 export const dynamic = "force-dynamic";
 
 export default function Home() {
   return (
-    <div className="min-h-full bg-zinc-950 text-white">
-      <header className="border-b border-zinc-800 px-4 py-4">
-        <div className="mx-auto max-w-3xl flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-semibold tracking-widest uppercase text-white">
-              tekpi
-            </h1>
-            <p className="text-xs text-zinc-500 mt-0.5">e-ink display manager</p>
-          </div>
-          <span className="text-xs text-zinc-600 font-mono">800 × 480 · 7 colors</span>
+    <div className="min-h-full bg-[var(--surface)] text-[var(--text-primary)]">
+      <header className="border-b border-white/[0.07] px-4 py-5">
+        <div className="mx-auto flex max-w-3xl items-center justify-between">
+          <h1 className="text-sm font-medium uppercase tracking-widest text-[var(--text-primary)]">
+            tekpi
+          </h1>
+          <span className="font-mono text-xs text-[var(--text-muted)]">
+            800×480 · 7 colors
+          </span>
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl px-4 py-8 flex flex-col gap-10">
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-12 px-4 py-10">
         <section>
-          <h2 className="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-4">
-            Ajouter une image
+          <h2 className="mb-5 text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-500">
+            Bibliothèque
           </h2>
-          <UploadForm />
+          <div className="flex flex-col gap-8">
+            <UploadForm />
+            <Gallery />
+          </div>
         </section>
 
         <section>
-          <h2 className="text-xs font-medium uppercase tracking-widest text-zinc-500 mb-4">
-            Galerie
+          <h2 className="mb-5 text-[11px] font-medium uppercase tracking-[0.08em] text-zinc-500">
+            Configuration
           </h2>
-          <Gallery />
+          <Settings />
         </section>
       </main>
 
-      <footer className="border-t border-zinc-800 px-4 py-3">
+      <footer className="border-t border-white/[0.07] px-4 py-4">
         <div className="mx-auto max-w-3xl">
-          <p className="text-xs font-mono text-zinc-700">
+          <p className="font-mono text-xs text-[var(--text-muted)]">
             {process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? "local"}
           </p>
         </div>

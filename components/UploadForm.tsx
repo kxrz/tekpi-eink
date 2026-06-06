@@ -129,14 +129,11 @@ export default function UploadForm() {
   return (
     <form onSubmit={handleSubmit}>
       <label
-        className={`
-          flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed
-          px-6 py-10 text-center transition-colors cursor-pointer
-          ${compressedFile
-            ? "border-zinc-600 bg-zinc-900"
-            : "border-zinc-700 bg-zinc-900/50 hover:border-zinc-500 hover:bg-zinc-900"
-          }
-        `}
+        className={`flex cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border border-dashed px-6 py-10 text-center transition-colors duration-150 ${
+          compressedFile
+            ? "border-white/[0.15] bg-white/[0.04]"
+            : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.15] hover:bg-white/[0.04]"
+        }`}
       >
         <input
           type="file"
@@ -148,26 +145,25 @@ export default function UploadForm() {
 
         {compressing ? (
           <>
-            <span className="text-2xl">⏳</span>
-            <span className="text-sm text-zinc-400">Compression en cours…</span>
+            <span className="text-2xl text-zinc-600">…</span>
+            <span className="text-sm text-zinc-500">Compression en cours…</span>
           </>
         ) : compressedFile ? (
           <>
-            <span className="text-2xl">✓</span>
-            <span className="text-sm text-zinc-300 font-medium truncate max-w-full">
+            <span className="text-2xl text-zinc-500">✓</span>
+            <span className="max-w-full truncate text-sm font-medium text-[var(--text-primary)]">
               {originalFileName}
             </span>
             <span className="text-xs text-zinc-500">Cliquer pour changer</span>
           </>
         ) : (
           <>
-            <svg className="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
-                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-            </svg>
+            <span className="text-2xl text-zinc-600">+</span>
             <div>
-              <p className="text-sm text-zinc-300 font-medium">Choisir une image</p>
-              <p className="text-xs text-zinc-500 mt-1">JPEG ou PNG</p>
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                Choisir une image
+              </p>
+              <p className="mt-1 text-xs text-zinc-500">JPEG ou PNG</p>
             </div>
           </>
         )}
@@ -176,14 +172,12 @@ export default function UploadForm() {
       <button
         type="submit"
         disabled={!isIdle || !compressedFile}
-        className="mt-3 w-full rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-30"
+        className="mt-3 w-full rounded-md bg-white px-4 py-2.5 text-sm font-medium text-black transition-colors duration-150 hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-30"
       >
         {uploading ? "Envoi en cours…" : "Envoyer"}
       </button>
 
-      {error ? (
-        <p className="mt-2 text-sm text-red-400">{error}</p>
-      ) : null}
+      {error ? <p className="mt-2 text-sm text-red-400">{error}</p> : null}
     </form>
   );
 }

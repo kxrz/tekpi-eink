@@ -18,22 +18,25 @@ async function deleteImageAction(formData: FormData): Promise<void> {
 
   const originalUrl = formData.get("originalUrl");
   const fileBase = formData.get("fileBase");
-  if (typeof originalUrl !== "string" || typeof fileBase !== "string") return;
+  if (typeof originalUrl !== "string" || typeof fileBase !== "string") {
+    return;
+  }
 
-  // Collect all 3 versions to delete
   const [{ blobs: crops }, { blobs: display }] = await Promise.all([
     listCrops(),
     listDisplay(),
   ]);
 
-  const cropBlob = crops.find((b) => basenameWithoutExt(basename(b.pathname)) === fileBase);
-  const displayBlob = display.find((b) => basenameWithoutExt(basename(b.pathname)) === fileBase);
+  const cropBlob = crops.find(
+    (b) => basenameWithoutExt(basename(b.pathname)) === fileBase,
+  );
+  const displayBlob = display.find(
+    (b) => basenameWithoutExt(basename(b.pathname)) === fileBase,
+  );
 
-  const urlsToDelete = [
-    originalUrl,
-    cropBlob?.url,
-    displayBlob?.url,
-  ].filter((u): u is string => typeof u === "string");
+  const urlsToDelete = [originalUrl, cropBlob?.url, displayBlob?.url].filter(
+    (u): u is string => typeof u === "string",
+  );
 
   await del(urlsToDelete);
   revalidatePath("/");
@@ -46,7 +49,11 @@ export default async function Gallery() {
   ]);
 
   if (originals.length === 0) {
-    return <p className="text-zinc-400">Aucune image pour le moment.</p>;
+    return (
+      <p className="text-sm text-[var(--text-secondary)]">
+        Aucune image pour le moment.
+      </p>
+    );
   }
 
   const cropByBase = new Map<string, string>();

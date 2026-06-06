@@ -96,14 +96,14 @@ export default function ImageEditor({
         <button
           type="button"
           onClick={handleRotateLeft}
-          className="flex-1 rounded-md border border-zinc-700 px-3 py-2 text-sm text-white transition-colors hover:bg-zinc-900"
+          className="flex-1 rounded-md border border-white/[0.07] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors duration-150 hover:bg-white/[0.04]"
         >
           ↺ -90°
         </button>
         <button
           type="button"
           onClick={handleRotateRight}
-          className="flex-1 rounded-md border border-zinc-700 px-3 py-2 text-sm text-white transition-colors hover:bg-zinc-900"
+          className="flex-1 rounded-md border border-white/[0.07] px-3 py-2 text-sm text-[var(--text-primary)] transition-colors duration-150 hover:bg-white/[0.04]"
         >
           ↻ +90°
         </button>
@@ -112,14 +112,14 @@ export default function ImageEditor({
         <button
           type="button"
           onClick={handleConfirm}
-          className="flex-1 rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200"
+          className="flex-1 rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors duration-150 hover:bg-zinc-200"
         >
           Valider
         </button>
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-md border border-zinc-700 px-4 py-2 text-sm text-white transition-colors hover:bg-zinc-900"
+          className="flex-1 rounded-md border border-white/[0.07] px-4 py-2 text-sm text-[var(--text-primary)] transition-colors duration-150 hover:bg-white/[0.04]"
         >
           Annuler
         </button>
