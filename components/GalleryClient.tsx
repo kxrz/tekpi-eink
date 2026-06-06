@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-type BlobItem = { url: string; pathname: string; originalUrl: string };
+type BlobItem = { url: string; pathname: string; originalUrl: string; cropUrl: string | null };
 
 type Props = {
   blobs: BlobItem[];
@@ -89,15 +89,22 @@ export default function GalleryClient({ blobs, deleteAction }: Props) {
             <button
               type="button"
               onClick={() => handleOpenEditor(blob)}
-              className="relative aspect-[5/3] cursor-pointer overflow-hidden rounded-lg border border-zinc-800"
+              className="relative aspect-[5/3] cursor-pointer overflow-hidden rounded-lg border border-zinc-800 group"
             >
               <Image
-                src={blob.url}
+                src={blob.cropUrl ?? blob.url}
                 alt={blob.pathname}
                 fill
                 className="object-cover"
                 sizes="(max-width: 768px) 50vw, 33vw"
               />
+              {!blob.cropUrl && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <span className="rounded-full bg-zinc-800 px-2 py-1 text-xs text-zinc-300">
+                    À cadrer
+                  </span>
+                </div>
+              )}
             </button>
             <form action={deleteAction}>
               <input type="hidden" name="url" value={blob.url} />
