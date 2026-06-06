@@ -124,27 +124,66 @@ export default function UploadForm() {
     }
   }
 
+  const isIdle = !compressing && !uploading;
+
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-      <input
-        type="file"
-        name="file"
-        accept="image/jpeg,image/png"
-        onChange={handleFileChange}
-        className="text-sm text-zinc-300 file:mr-4 file:rounded-md file:border-0 file:bg-zinc-800 file:px-4 file:py-2 file:text-sm file:text-white hover:file:bg-zinc-700"
-      />
+    <form onSubmit={handleSubmit}>
+      <label
+        className={`
+          flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed
+          px-6 py-10 text-center transition-colors cursor-pointer
+          ${compressedFile
+            ? "border-zinc-600 bg-zinc-900"
+            : "border-zinc-700 bg-zinc-900/50 hover:border-zinc-500 hover:bg-zinc-900"
+          }
+        `}
+      >
+        <input
+          type="file"
+          name="file"
+          accept="image/jpeg,image/png"
+          onChange={handleFileChange}
+          className="sr-only"
+        />
+
+        {compressing ? (
+          <>
+            <span className="text-2xl">⏳</span>
+            <span className="text-sm text-zinc-400">Compression en cours…</span>
+          </>
+        ) : compressedFile ? (
+          <>
+            <span className="text-2xl">✓</span>
+            <span className="text-sm text-zinc-300 font-medium truncate max-w-full">
+              {originalFileName}
+            </span>
+            <span className="text-xs text-zinc-500">Cliquer pour changer</span>
+          </>
+        ) : (
+          <>
+            <svg className="w-8 h-8 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
+            <div>
+              <p className="text-sm text-zinc-300 font-medium">Choisir une image</p>
+              <p className="text-xs text-zinc-500 mt-1">JPEG ou PNG</p>
+            </div>
+          </>
+        )}
+      </label>
+
       <button
         type="submit"
-        disabled={uploading || compressing || !compressedFile}
-        className="rounded-md bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+        disabled={!isIdle || !compressedFile}
+        className="mt-3 w-full rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-black transition-colors hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-30"
       >
-        {compressing
-          ? "Compression..."
-          : uploading
-            ? "Envoi en cours..."
-            : "Envoyer"}
+        {uploading ? "Envoi en cours…" : "Envoyer"}
       </button>
-      {error ? <p className="text-sm text-red-400">{error}</p> : null}
+
+      {error ? (
+        <p className="mt-2 text-sm text-red-400">{error}</p>
+      ) : null}
     </form>
   );
 }
