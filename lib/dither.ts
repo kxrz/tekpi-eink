@@ -62,6 +62,10 @@ function addError(
   pixels[index] += amount;
 }
 
+// Controls how much of the quantization error is diffused to neighbours.
+// 1.0 = classic Floyd-Steinberg (maximum grain), 0.0 = no dithering.
+const ERROR_DIFFUSION = 0.65;
+
 export async function ditherToACeP(
   rawBuffer: Buffer,
   width: number,
@@ -96,21 +100,21 @@ export async function ditherToACeP(
       const errG = oldG - newG;
       const errB = oldB - newB;
 
-      addError(pixels, x + 1, y, width, height, 0, errR * (7 / 16));
-      addError(pixels, x + 1, y, width, height, 1, errG * (7 / 16));
-      addError(pixels, x + 1, y, width, height, 2, errB * (7 / 16));
+      addError(pixels, x + 1, y, width, height, 0, errR * (7 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x + 1, y, width, height, 1, errG * (7 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x + 1, y, width, height, 2, errB * (7 / 16) * ERROR_DIFFUSION);
 
-      addError(pixels, x - 1, y + 1, width, height, 0, errR * (3 / 16));
-      addError(pixels, x - 1, y + 1, width, height, 1, errG * (3 / 16));
-      addError(pixels, x - 1, y + 1, width, height, 2, errB * (3 / 16));
+      addError(pixels, x - 1, y + 1, width, height, 0, errR * (3 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x - 1, y + 1, width, height, 1, errG * (3 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x - 1, y + 1, width, height, 2, errB * (3 / 16) * ERROR_DIFFUSION);
 
-      addError(pixels, x, y + 1, width, height, 0, errR * (5 / 16));
-      addError(pixels, x, y + 1, width, height, 1, errG * (5 / 16));
-      addError(pixels, x, y + 1, width, height, 2, errB * (5 / 16));
+      addError(pixels, x, y + 1, width, height, 0, errR * (5 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x, y + 1, width, height, 1, errG * (5 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x, y + 1, width, height, 2, errB * (5 / 16) * ERROR_DIFFUSION);
 
-      addError(pixels, x + 1, y + 1, width, height, 0, errR * (1 / 16));
-      addError(pixels, x + 1, y + 1, width, height, 1, errG * (1 / 16));
-      addError(pixels, x + 1, y + 1, width, height, 2, errB * (1 / 16));
+      addError(pixels, x + 1, y + 1, width, height, 0, errR * (1 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x + 1, y + 1, width, height, 1, errG * (1 / 16) * ERROR_DIFFUSION);
+      addError(pixels, x + 1, y + 1, width, height, 2, errB * (1 / 16) * ERROR_DIFFUSION);
     }
   }
 
