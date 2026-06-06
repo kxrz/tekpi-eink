@@ -86,6 +86,7 @@ export default function UploadForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setError(null);
 
     if (!compressedFile || !originalFileName) {
@@ -112,7 +113,7 @@ export default function UploadForm() {
         throw new Error(data.error ?? "Échec de l'envoi.");
       }
 
-      event.currentTarget.reset();
+      form.reset();
       setCompressedFile(null);
       setOriginalFileName(null);
       router.refresh();
